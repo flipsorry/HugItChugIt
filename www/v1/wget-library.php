@@ -21,6 +21,8 @@ class HttpRequest {
 
   private function callPirateAndProcess($search) {
     echo exec("rm wget-test.html");
+    fclose($file);
+
     echo exec("wget -O wget-test.html http://thepiratebay.se/search/" . urlencode($search) . "/0/7/0");
     $file = fopen("wget-test.html", "r") or die("can't open file");
     $webpage = fread($file, filesize("wget-test.html"));

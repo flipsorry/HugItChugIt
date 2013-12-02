@@ -4,9 +4,6 @@
   $search = $_GET["search"];
   if ($search != "") {
     $torrents = $torrentService->getTorrentList($search);
-    //foreach ($torrents as $torrent) {
-    //  echo $torrent['name'];
-    //}
   }
 ?>
 <!DOCTYPE html>
@@ -33,7 +30,7 @@
       
       <form>
       <div>
-        <input type="text" name="search" placeholder="Game of Thrones..." value="<?= $search ?>">
+        <input type="text" name="search" placeholder="Game of Thrones..." value="<?= $search ?>" x-webkit-speech>
       </div>
       <div>
         <button class="btn">Search</button>
