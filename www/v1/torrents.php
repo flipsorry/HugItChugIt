@@ -1,29 +1,11 @@
 <?php
-  require_once 'wget-library.php';
+  require_once 'data/torrent-search/wget-library.php';
   $torrentService = new HttpRequest();
   $search = $_GET["search"];
   if ($search != "") {
     $torrents = $torrentService->getTorrentList($search);
   }
 ?>
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Torrenting at its best</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Bootstrap -->
-    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
-    <style>
-      body {
-        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-      }
-      table {
-        margin-top:20px;
-      }
-    </style>
-    <link href="css/bootstrap-responsive.css" rel="stylesheet">
-  </head>
-  <body>
     <?php include 'nav/navigation.php' ?>
     <div class="container">
       <p>A clean and energy efficient way to torrent</p>
@@ -37,6 +19,7 @@
       </div>
       </form>
 <?php
+   $periods = array(",", ".", "-");
    if ($torrents) {
       echo "<table class='table table-striped'>";
       echo "  <thead><th>Name</th><th>Seeds</th></thead>";
@@ -45,7 +28,7 @@
         echo "<tr>";
         echo "  <td>";
         echo "    <button class='btn btn-link download' data-magnet='" . $torrent['magnet'] . "'>";
-        echo $torrent['name'];
+        echo str_replace($periods, " ", $torrent['name']);
         echo "    </button>";
         echo "  </td>";
         echo "  <td>";
@@ -60,8 +43,6 @@
    }
 ?>
     </div>
-    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
     <script type="text/javascript">
 
 (function() {
@@ -75,7 +56,7 @@
    parentDom.find('.seeds').slideUp();
 
    $.ajax({
-     url: "../addTorrent.php?magnet=" + magnet, 
+     url: "ajax/torrent/addTorrent.php?magnet=" + magnet, 
      complete: function() {
         thisDom.slideUp(1200, function() {
           parentDom.hide();
@@ -86,5 +67,5 @@
   });
 })();
     </script>
-  </body>
-</html>
+    
+<?php include 'nav/navigation-end.php' ?>
