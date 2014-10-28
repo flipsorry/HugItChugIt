@@ -1,5 +1,6 @@
 <?php 
     $user = $_GET['user']; 
+    $otherHand = (strcmp($user, 'liem') == 0) ? 'sarahsHand' : 'liemsHand';
 ?>
 
 <!DOCTYPE html>
@@ -99,10 +100,13 @@
   </head>
   <body>
   <div id="middleBar" style="height: 140px; border-left: 1px solid #fff; position: absolute; top:20px;"></div>
-  <a href="/v1/rummy.php?user=<?= $user ?>">
-    <button class="btn" id="refreshButton" style="position: absolute; top:162px; left: 530px; padding: 3px 5px; font-size: 20px">&#8635;</button>
-  </a>
-  <button class="btn btn-info" style="position: absolute; top:161px; left: 425px;"><span id="whosTurn"><?= $user ?></span>'s turn</button>
+  <div id="infoBar" style="position: absolute; top:161px; left: 380px;">
+      <button class="btn btn-info"><span id="whosTurn"><?= $user ?></span>'s turn</button>
+      <button class="btn btn-success" id="otherHand"></button>
+      <a href="/v1/rummy.php?user=<?= $user ?>">
+        <button class="btn" id="refreshButton" style="padding: 3px 5px; font-size: 20px">&#8635;</button>
+      </a>
+  </div>
   <button class="btn hide" id="pickupButton" style="position: absolute; top:280px; left: 470px;">Pickup</button>
   <button class="btn hide" id="discardButton" style="position: absolute; top:280px; left: 470px;">Discard</button>
   <button class="btn hide" id="tripsButton" style="position: absolute; top:240px; left: 470px;">Play Trips</button>
@@ -139,6 +143,7 @@
 (function(w) {
    var user = '<?= $user ?>';
    var myHandMetadata = user + 'sHand';
+   var otherHand = '<?= $otherHand ?>';
    var leftOffset = 10;
    var middleOffset = 283;
    var $container = $("#container");
@@ -321,7 +326,7 @@
        }
        
        var getCurrentState = function(){
-           getMetadata([myHandMetadata, 'communityCards' , 'whosTurn', 'turnState']).done(function(results) {
+           getMetadata([myHandMetadata, 'communityCards' , 'whosTurn', 'turnState', otherHand]).done(function(results) {
                var myCardsJson = jQuery.parseJSON(results[myHandMetadata])['cards'];
                whosTurn = results['whosTurn'];
                turnState = results['turnState'];
@@ -344,6 +349,8 @@
                } else {
                    $whosTurn.html(whosTurn);
                }
+               var otherHandJson = jQuery.parseJSON(results[otherHand]);
+               $("#otherHand").html(otherHandJson.cards.length);
            });
        };
        getCurrentState();
