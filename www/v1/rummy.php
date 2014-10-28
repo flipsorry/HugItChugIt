@@ -1,12 +1,13 @@
 <?php 
     $user = $_GET['user']; 
+    $isMobile = $_GET['isMobile'];
     $otherHand = (strcmp($user, 'liem') == 0) ? 'sarahsHand' : 'liemsHand';
 ?>
 
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Happy Birthdy Sarahhh</title>
+    <title>Happy Birthday Sarah!</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -79,6 +80,9 @@
             transform: rotate(180deg);
             font-size: 1rem;
         }
+        .highlighted {
+            background-color: #A1E5FF;
+        }
         .hide {
             display: none;
         }
@@ -97,6 +101,8 @@
     </style>
 
     <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.8.21/jquery-ui.min.js"></script>
+    <script src="js/jquery.ui.touch-punch.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
   </head>
   <body>
@@ -104,8 +110,9 @@
   <div id="infoBar" style="position: absolute; top:161px; left: 380px;">
       <button class="btn btn-info"><span id="whosTurn"><?= $user ?></span>'s turn</button>
       <button class="btn btn-success" id="otherHand"></button>
+      <button class="btn" id="refreshButton" style="padding: 3px 5px; font-size: 20px">&#8635;</button>
       <a href="/v1/rummy.php?user=<?= $user ?>">
-        <button class="btn" id="refreshButton" style="padding: 3px 5px; font-size: 20px">&#8635;</button>
+        
       </a>
   </div>
   <button class="btn hide" id="pickupButton" style="position: absolute; top:280px; left: 470px;">Pickup</button>
@@ -145,6 +152,7 @@
    var user = '<?= $user ?>';
    var myHandMetadata = user + 'sHand';
    var otherHand = '<?= $otherHand ?>';
+   var isMobile = '<?= $isMobile ?>';
    var leftOffset = 10;
    var middleOffset = 283;
    var $container = $("#container");
@@ -192,8 +200,6 @@
    var Game = function() {
        var whosTurn;
        var turnState;
-       var myHand = Hand(0, 250, 30, false, "higherIndex");
-       var communityHand = Hand(60, 180, 30, false, "middleIndex");
        var playedCards = PlayedCards();
        var isCardTopClickable = false;
        var myHandClickable = false;
@@ -211,7 +217,6 @@
                var cardsToPlay = JSON.stringify(handSelected);
                executeAction(action, {cardsToPlay: cardsToPlay}, true)
                .done(function() {
-                   handSelected = [];
                    disableButtons(false);
                })
                .always(function() {
@@ -227,7 +232,9 @@
            $tripsButton.unbind('click');
            $runButton.unbind('click');
            $discardButton.unbind('click');
+           handSelected = [];
            if (isChangeTurn) {
+               myHandClickable = false;
                myHand.makeUnClickable();
            }
            getCurrentState();
@@ -305,6 +312,9 @@
            }
        };
 
+       var myHand = Hand(0, 250, 30, false, 100, true, handClickedCallback, true);
+       var communityHand = Hand(60, 180, 30, false, 50, false, communityCardClicked, false);
+
        var setTurnState = function(whosTurn, turnState) {
            if (turnState == 'NOT_PICKED_UP' && ! isCardTopClickable) {
                isCardTopClickable = true;
@@ -318,11 +328,12 @@
                });
 
                // Hook up the community cards being picked up
-               communityHand.makeCardsClickable(communityCardClicked, false);
+               communityIndexSelected = -1;
+               communityHand.makeCardsClickable();
            }
            if (turnState == 'PICKED_UP' && ! myHandClickable) {
                myHandClickable = true;
-               myHand.makeCardsClickable(handClickedCallback, true);
+               myHand.makeCardsClickable();
            }
        }
        
@@ -378,7 +389,7 @@
                if ((handsShowed % 3) == 0) xOffset = 0;
                var cards = played[i]['cards'];
                // ofset for each "deck"
-               var newHand = new Hand(xBase + xOffset,yOffset,15, true, null);
+               var newHand = new Hand(xBase + xOffset,yOffset,15, true, null, false);
                newHand.refreshCards(cards);
                xOffset += 25 + (cards.length * 15);
                show.push(newHand);
@@ -398,7 +409,7 @@
        }
    };
 
-   var Hand = function(x, y, xStep, useSmallCards, higherIndex) {
+   var Hand = function(x, y, xStep, useSmallCards, higherIndex, draggable, handClickedCallback, shouldSwitchSelected) {
        var yOffset = y;
        var xOffset = x;
        var xOffsetStep = xStep;
@@ -412,12 +423,33 @@
                    foundCard = true;
            }
            return foundCard;
-       }
+       };
+
+       var makeCardsClickable = function() {
+           for (var i = 0; i < cards.length; i++) {
+               var card = cards[i];
+               card.makeClickable(handClickedCallback, card, i, cards, shouldSwitchSelected);
+           }
+       };
+       var makeUnClickable = function() {
+           for (var i = 0; i < cards.length; i++) {
+               var card = cards[i];
+               card.makeUnClickable();
+           }
+       };
+
+       var moveCardToEnd = ! draggable ? null :  function(index) {
+           var moveCard = cards.splice(index, 1);
+           cards.push(moveCard[0]);
+           makeUnClickable();
+           makeCardsClickable();
+           refreshXAxis();
+       };
        
        var addIfNewCard = function(cardJson) {
            var foundCard = doesListContainCard(cards, cardJson);
            if (! foundCard) {
-               var card = Card(cardJson.suit, cardJson.rank, cardJson.display, useSmallCards, higherIndex);
+               var card = Card(cardJson.suit, cardJson.rank, cardJson.display, useSmallCards, higherIndex, moveCardToEnd);
                card.setYOffset(yOffset);
                cards.push(card);
                $container.append(card.getDom());
@@ -437,8 +469,10 @@
            for(var i = 0; i < cards.length; i++) {
                var card = cards[i];
                card.setXOffset((xOffsetStep * i) + leftOffset + xOffset);
+               if (higherIndex) { card.setZIndex(higherIndex + i);}
            }
        };
+
        
        return {
            refreshCards: function(cardsJson) {
@@ -449,18 +483,8 @@
                deleteMissingCards(cardsJson);
                refreshXAxis();
            },
-           makeCardsClickable: function(handClickedCallback, shouldSwitchSelected) {
-               for (var i = 0; i < cards.length; i++) {
-                   var card = cards[i];
-                   card.makeClickable(handClickedCallback, card, i, cards, shouldSwitchSelected);
-               }
-           },
-           makeUnClickable: function() {
-               for (var i = 0; i < cards.length; i++) {
-                   var card = cards[i];
-                   card.makeUnClickable();
-               }
-           },
+           makeCardsClickable: makeCardsClickable,
+           makeUnClickable: makeUnClickable,
            deleteCards: function() {
                for (var i = 0; i < cards.length; i++) {
                    var card = cards[i];
@@ -470,7 +494,7 @@
        };
    }
 
-   var Card = function(suit, rank, display, useSmallCard, indexClass) {
+   var Card = function(suit, rank, display, useSmallCard, indexClass, draggable) {
        var selected = false;
        var xOffset;
        var yOffset;
@@ -479,7 +503,7 @@
            $dom.addClass("smallCard");
        }
        if (indexClass) {
-           $dom.addClass(indexClass);
+           $dom.css({"z-index": indexClass});
        }
        $dom.attr("id", rank + suit);
        $dom.find(".symbol").html(display);
@@ -522,6 +546,11 @@
                yOffset = y;
                $dom.css({left: x + "px", top: y + "px"});
            },
+           setZIndex: function(index) {
+               if (index) {
+                   $dom.css({"z-index": index});
+               }
+           },
            select: function() {
                displayYOffset(yOffset - 20);
            },
@@ -529,19 +558,46 @@
                displayYOffset(yOffset);
            },
            makeClickable: function(handClickedCallback, card, index, cards, shouldSwitchSelected) {
-               $dom.click(function() {
-                   if (shouldSwitchSelected)
-                       switchSelected();
-                   handClickedCallback(card, selected, index, cards);
-               });
+               $dom.unbind('click');
+               $dom.unbind('touchend');
+               $dom.unbind('touchstart');
+
+               if (draggable && isMobile == 'true') {
+                   $dom.bind('touchend', function(event) {
+                       $dom.removeClass("highlighted");
+                       var touch = event.originalEvent.changedTouches[0];
+                       w.ee = event;
+                       if (touch.pageX - xOffset > 50) {
+                           console.log(index);
+                           event.preventDefault();
+                           draggable(index);
+                       } else {
+                           if (shouldSwitchSelected)
+                               switchSelected();
+                           handClickedCallback(card, selected, index, cards);
+                       }
+                   });
+                   $dom.bind('touchstart', function(event) {
+                       $dom.addClass("highlighted");
+                   });
+               } else {
+                   $dom.click(function() {
+                       if (shouldSwitchSelected)
+                           switchSelected();
+                       handClickedCallback(card, selected, index, cards);
+                   });
+               }
            },
            makeUnClickable: function() {
                $dom.unbind('click');
+               $dom.unbind('touchend');
+               $dom.unbind('touchstart');
            }
        };
    }
 
    w.game = Game();
+   $("#refreshButton").click(function() { w.game.getCurrentState();});
     
 })(window);
     </script>
