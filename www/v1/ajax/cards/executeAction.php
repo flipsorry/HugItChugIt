@@ -14,6 +14,8 @@
         return;
     }
     
+    $otherUser = (strcmp($user, 'liem') == 0) ? 'liemsHand' : 'sarahsHand';
+    
     $turnState = $metadataDao->getRequest('turnState');
     $mapper = new JsonMapper();
     
@@ -71,16 +73,26 @@
             
             if (sizeof($currentHand->cards) == 0) {
                 $metadataDao->putRequest('whosTurn', 'GAME_OVER');
+                
+                $liemsSeries = $metadataDao->getRequest('liemsSeries');
+                $sarahsSeries = $metadataDao->getRequest('sarahsSeries');
+                
+                $liemsHandDecoded = json_decode($metadataDao->getRequest('liemsHand'));
+                $liemsHand = $mapper->map($liemsHandDecoded, new Hand());
+                $sarahsHandDecoded = json_decode($metadataDao->getRequest('sarahsHand'));
+                $sarahsHand = $mapper->map($sarahsHandDecoded, new Hand());
+                
                 $liemsScore = $communityCards->getScore('liem');
                 $sarahsScore = $communityCards->getScore('sarah');
+                
+                $liemsSeries += $liemsScore - $liemsHand->getScore();
+                $sarahsSeries += $sarahsScore - $sarahsHand->getScore();
+                
+                
                 $metadataDao->putLog('GAME_END', 'liemsScore: ' . $liemsScore . ', sarahsScore: ' . $sarahsScore);
                 $metadataDao->putRequest('liemsScore', $liemsScore);
                 $metadataDao->putRequest('sarahsScore', $sarahsScore);
                 
-                $liemsSeries = $metadataDao->getRequest('liemsSeries');
-                $sarahsSeries = $metadataDao->getRequest('sarahsSeries');
-                $liemsSeries += $liemsScore;
-                $sarahsSeries += $sarahsScore;
                 $metadataDao->putRequest('liemsSeries', $liemsSeries);
                 $metadataDao->putRequest('sarahsSeries', $sarahsSeries);
             }
@@ -107,17 +119,26 @@
                 $metadataDao->putRequest($whosHand , json_encode($currentHand));
                 if (sizeof($currentHand->cards) == 0) {
                     $metadataDao->putRequest('whosTurn', 'GAME_OVER');
+                    
+                    $liemsSeries = $metadataDao->getRequest('liemsSeries');
+                    $sarahsSeries = $metadataDao->getRequest('sarahsSeries');
+                    
+                    $liemsHandDecoded = json_decode($metadataDao->getRequest('liemsHand'));
+                    $liemsHand = $mapper->map($liemsHandDecoded, new Hand());
+                    $sarahsHandDecoded = json_decode($metadataDao->getRequest('sarahsHand'));
+                    $sarahsHand = $mapper->map($sarahsHandDecoded, new Hand());
+                    
                     $liemsScore = $communityCards->getScore('liem');
-                    // TODO SUBTRACTION OF SCORE
                     $sarahsScore = $communityCards->getScore('sarah');
+                    
+                    $liemsSeries += $liemsScore - $liemsHand->getScore();
+                    $sarahsSeries += $sarahsScore - $sarahsHand->getScore();
+                    
+                    
                     $metadataDao->putLog('GAME_END', 'liemsScore: ' . $liemsScore . ', sarahsScore: ' . $sarahsScore);
                     $metadataDao->putRequest('liemsScore', $liemsScore);
                     $metadataDao->putRequest('sarahsScore', $sarahsScore);
                     
-                    $liemsSeries = $metadataDao->getRequest('liemsSeries');
-                    $sarahsSeries = $metadataDao->getRequest('sarahsSeries');
-                    $liemsSeries += $liemsScore;
-                    $sarahsSeries += $sarahsScore;
                     $metadataDao->putRequest('liemsSeries', $liemsSeries);
                     $metadataDao->putRequest('sarahsSeries', $sarahsSeries);
                 }

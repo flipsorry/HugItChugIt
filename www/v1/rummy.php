@@ -335,6 +335,7 @@
                    setTurnState(whosTurn, turnState);
                }
                if (whosTurn == 'GAME_OVER') {
+                   $whosTurn.parent().html("Game Over");
                    getMetadata(['liemsScore', 'sarahsScore', 'liemsSeries', 'sarahsSeries']).done(function(results) {
                        $("#finalScore").html("Sarah: " + results['sarahsScore'] + " - Liem: " + results['liemsScore']);
                        $("#seriesScore").html("Sarah: " + results['sarahsSeries'] + " - Liem: " + results['liemsSeries']);

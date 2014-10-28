@@ -145,7 +145,7 @@ class CommunityCards {
         $this->sarahsPlayed = array();
     }
     
-    public function getScore($user) {
+    public function getScore($user, $personsHand) {
         if (strcmp($user, 'liem') == 0) {
             return $this->getScoreForUser($this->liemsPlayed);
         } else {
@@ -284,7 +284,6 @@ class CommunityCards {
                 $ranks = array();
                 for ($i = 0; $i < sizeof($cards); $i++) {
                     $card = $cards[$i];
-                    echo $card;
                     if ($card->suit != $cardSuit) {
                         return null;
                     }
@@ -293,13 +292,15 @@ class CommunityCards {
                 sort($ranks);
                 $rankLength = sizeof($ranks);
                 for ($i = 1; $i < $rankLength; $i++) {
+                    echo '('.$ranks[$i].')'; 
                     if($ranks[$i] - 1 != $ranks[$i - 1]) {
                         // check if the last card is an ace
                         // BUG this only works if you play 3 cards at once
-                        if (! ($ranks[$i] == 14 && $ranks[0] == 1)) {
+                        if (! ($ranks[$i] == 14 && $ranks[0] == 2)) {
                             return null;
                         } else {
-                            $ranks[$i - 1] = 1;
+                            for ($i = 0; $i < sizeof($cards); $i++) 
+                                if ($cards[$i]->rank == 14) $cards[$i]->rank = 1;
                         }
                     }
                 }
