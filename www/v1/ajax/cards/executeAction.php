@@ -68,7 +68,87 @@
             $metadataDao->putRequest('communityCards', json_encode($communityCards));
             $metadataDao->putRequest($whosHand, json_encode($currentHand));
             $metadataDao->putRequest('turnState', 'NOT_PICKED_UP');
+            
+            if (sizeof($currentHand->cards) == 0) {
+                $metadataDao->putRequest('whosTurn', 'GAME_OVER');
+                $liemsScore = $communityCards->getScore('liem');
+                $sarahsScore = $communityCards->getScore('sarah');
+                $metadataDao->putLog('GAME_END', 'liemsScore: ' . $liemsScore . ', sarahsScore: ' . $sarahsScore);
+                $metadataDao->putRequest('liemsScore', $liemsScore);
+                $metadataDao->putRequest('sarahsScore', $sarahsScore);
+                
+                $liemsSeries = $metadataDao->getRequest('liemsSeries');
+                $sarahsSeries = $metadataDao->getRequest('sarahsSeries');
+                $liemsSeries += $liemsScore;
+                $sarahsSeries += $sarahsScore;
+                $metadataDao->putRequest('liemsSeries', $liemsSeries);
+                $metadataDao->putRequest('sarahsSeries', $sarahsSeries);
+            }
+            
             echo json_encode($foundCard);
+            return;
+        }
+    }
+    
+    if (strcmp($action, 'PLAY_TRIPS') == 0 || strcmp($action, 'PLAY_RUN') == 0) {
+        if (strcmp($turnState, 'PICKED_UP') == 0) {
+            $cardsToPlayDecoded = json_decode($_GET["cardsToPlay"]);
+            $cardsToPlay = $mapper->mapArray($cardsToPlayDecoded, array(), 'Card');
+            if (! $currentHand->removeAllIfFound($cardsToPlay)) {
+                echo "Not all cards found in hand"; http_response_code(400); return;
+            }
+            
+            $communityCardsDecoded = json_decode($metadataDao->getRequest('communityCards'));
+            $communityCards = $mapper->map($communityCardsDecoded, new CommunityCards()); 
+            
+            if ($communityCards->playCards($user, $cardsToPlay, $action)) {
+                $metadataDao->putLog('PLAYING_CARDS', $user . ',' . $action . ' - ' . $_GET["cardsToPlay"]);
+                $metadataDao->putRequest('communityCards', json_encode($communityCards));
+                $metadataDao->putRequest($whosHand , json_encode($currentHand));
+                if (sizeof($currentHand->cards) == 0) {
+                    $metadataDao->putRequest('whosTurn', 'GAME_OVER');
+                    $liemsScore = $communityCards->getScore('liem');
+                    // TODO SUBTRACTION OF SCORE
+                    $sarahsScore = $communityCards->getScore('sarah');
+                    $metadataDao->putLog('GAME_END', 'liemsScore: ' . $liemsScore . ', sarahsScore: ' . $sarahsScore);
+                    $metadataDao->putRequest('liemsScore', $liemsScore);
+                    $metadataDao->putRequest('sarahsScore', $sarahsScore);
+                    
+                    $liemsSeries = $metadataDao->getRequest('liemsSeries');
+                    $sarahsSeries = $metadataDao->getRequest('sarahsSeries');
+                    $liemsSeries += $liemsScore;
+                    $sarahsSeries += $sarahsScore;
+                    $metadataDao->putRequest('liemsSeries', $liemsSeries);
+                    $metadataDao->putRequest('sarahsSeries', $sarahsSeries);
+                }
+                return; 
+            } else {
+                echo "Hand cannot be played!"; http_response_code(400); return;
+            } 
+        }
+    }
+    
+    if (strcmp($action, 'PICKUP_COMMUNITY') == 0) {
+        if (strcmp($turnState, 'NOT_PICKED_UP') == 0) {
+            $cardsToPickupDecoded = json_decode($_GET["cardsToPickup"]);
+            $cardsToPickup = $mapper->mapArray($cardsToPickupDecoded, array(), 'Card');
+            
+            $communityCardsDecoded = json_decode($metadataDao->getRequest('communityCards'));
+            $communityCards = $mapper->map($communityCardsDecoded, new CommunityCards());
+            $communityHand = $communityCards->communityHand;
+            
+            if (! $communityHand->removeAllIfFound($cardsToPickup)) {
+                echo "Not all cards found in community hand"; http_response_code(400); return;
+            }
+            
+            
+            // TODO we need to validate that the person can use the top card that was removed
+            $currentHand->pushCards($cardsToPickup);
+            
+            $metadataDao->putLog('PICKUP_COMMUNITY', $user . ',' . $action . ' - ' . $_GET["cardsToPickup"]);
+            $metadataDao->putRequest('communityCards', json_encode($communityCards));
+            $metadataDao->putRequest($whosHand, json_encode($currentHand));
+            $metadataDao->putRequest('turnState', 'PICKED_UP');
             return;
         }
     }

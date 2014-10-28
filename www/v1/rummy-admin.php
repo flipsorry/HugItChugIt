@@ -4,7 +4,7 @@
     require_once $_SERVER['DOCUMENT_ROOT'] . '/v1/data/mysql/MetadataDao.php';
     require_once $_SERVER['DOCUMENT_ROOT'] . '/v1/data/cards/Deck.php';
     require_once $_SERVER['DOCUMENT_ROOT'] . '/v1/data/json/JsonMapper.php';
-    if (strcmp($_POST['action'], 'startGame') === 0) {
+    if (strcmp($_GET['action'], 'startGame') === 0) {
         $deck = new Deck();
         $deck->createNewDeck();
         
@@ -35,11 +35,7 @@
         $metadata->putRequest('communityCards', $communityCardsEncoded);
         $metadata->putLog('CREATE_COMMUNITY_CARDS', $communityCardsEncoded);
         
-        $randomNumber = rand(0, 1);
-        $whoStarts = 'sarah';
-        if ($randomNumber == 0) {
-            $whoStarts = 'liem';
-        }
+        $whoStarts = $_GET['user'];
         $metadata->putRequest('whosTurn', $whoStarts);
         $metadata->putRequest('turnState', 'NOT_PICKED_UP');
         $metadata->putLog('TURN_START', $whoStarts);
@@ -51,13 +47,27 @@
         
         //echo '<br /><br />'. $encoded  . '<br />';
 
+    } else if (strcmp($_GET['action'], 'startSeries') === 0) {
+        $metadata = new MetadataDao();
+        $metadata->putRequest('liemsSeries', "0");
+        $metadata->putRequest('sarahsSeries', "0");
     }
 
 ?>
 
 
-<form name="input" action="rummy-admin.php" method="post">
+<form name="input" action="rummy-admin.php" method="get">
     <input type="radio" name="action" value="startGame">startGame<br>
+    <br />
+    <input type="radio" name="action" value="startSeries">startSeries<br>
+    
+    <br />
+    <input type="radio" name="user" value="liem">liem<br>
+    <br />
+    <input type="radio" name="user" value="sarah">sarah<br>
+    
+    <br />
+    <br />
     <input type="submit" value="Submit">
 </form>
 </body>
