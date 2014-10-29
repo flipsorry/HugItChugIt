@@ -28,15 +28,15 @@
         }
         .card.top {
             background-image: url('img/cards/back_card.png');
-            background-size: 40px 60px;
+            background-size: 32px 48px;
             background-repeat: no-repeat;
         }
         .card {
             position: absolute;
             top: 0;
             left: 0;
-            width: 2.5rem;
-            height: 3.8rem;
+            width: 2rem;
+            height: 3rem;
             background-color: #fff;
             -webkit-border-radius: .125rem;
             border-radius: .250rem;
@@ -107,7 +107,7 @@
   </head>
   <body>
   <div id="middleBar" style="height: 140px; border-left: 1px solid #fff; position: absolute; top:20px;"></div>
-  <div id="infoBar" style="position: absolute; top:161px; left: 380px;">
+  <div id="infoBar" style="position: absolute; top:161px; left: 305px;">
       <button class="btn btn-info"><span id="whosTurn"><?= $user ?></span>'s turn</button>
       <button class="btn btn-success" id="otherHand"></button>
       <button class="btn" id="refreshButton" style="padding: 3px 5px; font-size: 20px">&#8635;</button>
@@ -115,10 +115,10 @@
         
       </a>
   </div>
-  <button class="btn hide" id="pickupButton" style="position: absolute; top:280px; left: 470px;">Pickup</button>
-  <button class="btn hide" id="discardButton" style="position: absolute; top:280px; left: 470px;">Discard</button>
-  <button class="btn hide" id="tripsButton" style="position: absolute; top:240px; left: 470px;">Play Trips</button>
-  <button class="btn hide" id="runButton" style="position: absolute; top:200px; left: 470px;">Play Run</button>
+  <button class="btn hide" id="pickupButton" style="position: absolute; top:265px; left: 380px;">Pickup</button>
+  <button class="btn hide" id="discardButton" style="position: absolute; top:265px; left: 380px;">Discard</button>
+  <button class="btn hide" id="tripsButton" style="position: absolute; top:230px; left: 380px;">Play Trips</button>
+  <button class="btn hide" id="runButton" style="position: absolute; top:195px; left: 380px;">Play Run</button>
   <div id="container">
       
       <div class="card top" id="cardTop" style="top: 180px">
@@ -154,7 +154,7 @@
    var otherHand = '<?= $otherHand ?>';
    var isMobile = '<?= $isMobile ?>';
    var leftOffset = 10;
-   var middleOffset = 283;
+   var middleOffset = 240;
    var $container = $("#container");
    var $cardTop = $("#cardTop");
    var $discardButton = $("#discardButton");
@@ -312,7 +312,7 @@
            }
        };
 
-       var myHand = Hand(0, 250, 30, false, 100, true, handClickedCallback, true);
+       var myHand = Hand(0, 245, 30, false, 100, true, handClickedCallback, true);
        var communityHand = Hand(60, 180, 30, false, 50, false, communityCardClicked, false);
 
        var setTurnState = function(whosTurn, turnState) {
