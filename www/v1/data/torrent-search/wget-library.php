@@ -24,7 +24,8 @@ class HttpRequest {
     fclose($file);
 
     # echo exec("wget -q -O- http://thepiratebay.se/search/" . urlencode($search) . "/0/7/0 | gunzip > wget-test.html");
-    echo exec("wget -q -O wget-test.html http://thepiratebay.se/search/" . urlencode($search) . "/0/7/0");
+    # echo exec("wget -q -O wget-test.html http://oldpiratebay.org/search/" . urlencode($search) . "/0/7/0");
+    echo exec("wget -q -O wget-test.html http://oldpiratebay.org/search.php?Torrent_sort=seeders.desc&q=" . urlencode($search)); 
     $file = fopen("wget-test.html", "r") or die("can't open file");
     $webpage = fread($file, filesize("wget-test.html"));
     fclose($file);
