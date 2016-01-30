@@ -1,0 +1,5 @@
+{
+   "inputFile": "/home/flipsorry/Dos/Torrents/Sicario/Sicario (2015).mkv",
+   "outputFile": "/home/flipsorry/Dos/Torrents/Sicario/Sicario.mp4",
+   "logFile": "/home/flipsorry/cron/logs/test.txt"
+}
