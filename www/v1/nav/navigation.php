@@ -6,6 +6,7 @@
     <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="css/glyphs.css" rel="stylesheet">
     <style>
       body {
         padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
@@ -15,11 +16,11 @@
       }
     </style>
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
-    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
   </head>
-  <body>
-  
+  <body id="body">
+<div id="entire-container">  
 	<div class="navbar navbar-inverse navbar-fixed-top">
 	  <div class="navbar-inner">
 	    <div class="container">
@@ -33,7 +34,7 @@
 	        <ul class="nav">
 	          <li class="active"><a href="torrents.php">Home</a></li>
 	          <li><a href="/v1/torrents-downloading.php">Downloading</a></li>
-	          <li><a href="/Dos/Torrents">Finished</a></li>
+	          <li><a href="/Dos/Torrents/?C=M;O=D">Finished</a></li>
 	        </ul>
 	      </div><!--/.nav-collapse -->
 	    </div>

@@ -3,6 +3,18 @@
     <?php include 'nav/navigation.php' ?>
     
 <style>
+
+  body#body {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+
+  div.navbar-fixed-top {
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+  }
+
 	progress[value] {
 	  /* Reset the default appearance */
 	  -webkit-appearance: none;
@@ -54,11 +66,44 @@
 	  top: 7px;
 	  background-color: white;
 	}
+
+  div#title {
+    background: #fff;
+    color: #666;
+    padding-left: 20px;
+    border-bottom: 3px solid #0072bc;
+  }
+
+  div.torrentsContainer {
+    background: #eee;
+  }
+
+  div.torrentBox {
+    background: #fff;
+    border-top: 1px solid #e3e3e3;
+    border-bottom: 2px solid #ccc;
+    margin-bottom: 10px;
+    padding: 20px;
+    clear: both;
+    min-height: 100px;
+  }
+
+  div.image {
+    float: left;
+    min-width: 100px;
+  }
+  div.image img {
+    max-height: 100px;
+  }
 </style>
-    <div class="container">
-      <h3>Downloading</h3>
+    <div class="torrentsContainer">
+      <div id="title"><h4>Downloading</h4></div>
       <div id="loader"><img style="-webkit-user-select: none" src="http://ecx.images-amazon.com/images/G/01/x-locale/common/loading/loading-1x"></div>
-      
+     
+      <div id="torrentList">
+      </div>
+
+     <!--
       <table class='table table-striped'>
       	<thead>
       		<th>Name</th>
@@ -70,47 +115,107 @@
       		
       	</tbody>
       </table>
+      -->
     </div>
+    <!--<script type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js" ></script>
+    -->
     <script type="text/javascript">
 
 (function() {
 
 	var insertTorrentToTable = function(torrentData) {
-		var hash = torrentData["hash"];
+		var hash = torrentData[0];
+    var speed = (torrentData[9] / 1000000.0);
+    if (speed == 0) speed = "";
+    var progress = createProgressBar(torrentData[4] / 1000.0);
+    var state = torrentData[21];
+
 		var torrentDom = $("#" + hash);
-		if (torrentDom.length == 0) {
-			var torrentHtml = "<td>" + torrentData["name"] + "</td>";
-			torrentHtml += "<td>" + torrentData["dlspeed"] + "</td>";
-			torrentHtml += "<td>" + createProgressBar(torrentData["progress"]) + "</td>";
-			torrentHtml += "<td>" + torrentData["state"] + "</td>";
-			var torrentContainer = "<tr id='" + hash + "'>" + torrentHtml + "</tr>"; 
-			$("#torrentList").append(torrentContainer);
-		}
+    if (torrentDom.length == 0) {
+      // title
+      var title =  torrentData[2];
+      title = title
+            .replace(/\./g, " ")
+            .replace(/_/g, " ")
+            .replace(/\[[a-zA-Z0-9\.\- ]+\]/g, "")
+            .replace(/\[[^\]+]\]/gi, "")
+            .replace(/\([0-9]+\).*/gi, "")
+            .replace(/(19|20)[0-9]+.*/, "")
+            .replace(/(x264|720|1080|webrip).*/gi, "");
+      var torrentHtml = "<div class='image'></div>";
+      torrentHtml += "<div class='rightColumn'>";
+      torrentHtml += "  <div>" + title + "</div>";
+      //torrentHtml += "<div>" + torrentData[2] + "</div>";
+      torrentHtml += "  <span class='progress'>" + progress + "</span>";
+      // speed
+      torrentHtml += "  <span class='speed'>" + speed + "</span>";
+      // state
+      // torrentHtml += "  <span class='state'>" + state + "</span>";
+      torrentHtml += "</div>";
+      var torrentContainer = "<div class='torrentBox' id='" + hash + "'>" + torrentHtml + "</div>"; 
+      $("#torrentList").append(torrentContainer);
+
+      // go get the image
+      $.ajax({
+        url: "ajax/images/getImage.php",
+        data: {
+          search: title
+        },
+        dataType: "json"
+      })
+      .done(function(result) {
+        console.log(result.images[0]);
+        var torrentDom = $("#" + hash);
+        //torrentDom.find(".image").html("hello");
+        torrentDom.find(".image").html("<img src='" + result.images[0] + "' />");
+        console.log(torrentDom.find(".image"));
+      });
+
+    } else {
+      torrentDom.find('.speed').html(speed);
+      torrentDom.find('.progress').html(progress);
+      // torrentDom.find('.state').html(state);
+    }
 	};
 
 	var createProgressBar = function(progress) {
 		return '<progress value="' + progress + '" max="1.0"></progress>';
 	};
 	
+   var reload = function() {
    $.ajax({
-     url: "ajax/torrent/torrentRequest.php",
+     url: "ajax/torrent/utorr/listTorrents.php",
      data: {
-     	method: "GET",
-     	url: "/json/torrents"
      },
      dataType: "json"
    })
    .done(function(result) {
 	   	$("#loader").hide();
-	   	console.log(result); 
-	   	if (result.length > 0) {
-		   	for (var i = 0; i < result.length; i++) {
-			   	var torrentData = result[i];
+      var torrents = result.torrents;
+	   	console.log(torrents); 
+	   	if (torrents.length > 0) {
+		   	for (var i = 0; i < torrents.length; i++) {
+			   	var torrentData = torrents[i];
+          //console.log(torrentData);
 			   	insertTorrentToTable(torrentData);
 		   	}
 	   	}
    });
-    
+
+   setTimeout(function() {
+     reload();
+   }, 5000);
+   };
+
+   $.ajax({
+     url: "ajax/torrent/utorr/getToken.php",
+     data: {
+     }
+   })
+   .done(function(tokenResult) {
+     reload();
+   });
+ 
 })();
     </script>
     

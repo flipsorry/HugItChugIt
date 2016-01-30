@@ -1,15 +1,19 @@
 <?php
+  require_once 'RestRequest.php';
+  $rest = new RestRequest();
 	$magnet = htmlspecialchars($_GET["magnet"]);
-  $url = "http://localhost:8088/command/download";
-  $data = array('urls' => $magnet);
+  $token = $_GET["token"];
+  $url = "http://localhost:1080/command/download";
+  
+  $data = array('urls' => $magnet, 'token' => $token);
 
-  $options = array(
-    'http' => array(
-        'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-        'method'  => 'POST',
-        'content' => http_build_query($data),
-    ),
-  );
-  $context  = stream_context_create($options);
-  $result = file_get_contents($url, false, $context);
+  $url = "http://localhost:1080/gui?list=1&token=" . $token;
+ 
+  $results = $rest->makeAuthRequest('GET', "flipsorry", "hinesward", $url, array(), getallheaders());
+
+  var_dump($results);
+
+  $body = $results->getResponseBody(); 
+  echo ($body);
+
 ?>

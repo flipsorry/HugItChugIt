@@ -82,11 +82,11 @@
                 $sarahsHandDecoded = json_decode($metadataDao->getRequest('sarahsHand'));
                 $sarahsHand = $mapper->map($sarahsHandDecoded, new Hand());
                 
-                $liemsScore = $communityCards->getScore('liem');
-                $sarahsScore = $communityCards->getScore('sarah');
+                $liemsScore = $communityCards->getScore('liem') - $liemsHand->getScore();
+                $sarahsScore = $communityCards->getScore('sarah')  - $sarahsHand->getScore();
                 
-                $liemsSeries += $liemsScore - $liemsHand->getScore();
-                $sarahsSeries += $sarahsScore - $sarahsHand->getScore();
+                $liemsSeries += $liemsScore;
+                $sarahsSeries += $sarahsScore;
                 
                 
                 $metadataDao->putLog('GAME_END', 'liemsScore: ' . $liemsScore . ', sarahsScore: ' . $sarahsScore);
@@ -95,6 +95,8 @@
                 
                 $metadataDao->putRequest('liemsSeries', $liemsSeries);
                 $metadataDao->putRequest('sarahsSeries', $sarahsSeries);
+                
+                //if ()
             }
             
             echo json_encode($foundCard);
@@ -128,11 +130,11 @@
                     $sarahsHandDecoded = json_decode($metadataDao->getRequest('sarahsHand'));
                     $sarahsHand = $mapper->map($sarahsHandDecoded, new Hand());
                     
-                    $liemsScore = $communityCards->getScore('liem');
-                    $sarahsScore = $communityCards->getScore('sarah');
+                    $liemsScore = $communityCards->getScore('liem') - $liemsHand->getScore();
+                    $sarahsScore = $communityCards->getScore('sarah')  - $sarahsHand->getScore();
                     
-                    $liemsSeries += $liemsScore - $liemsHand->getScore();
-                    $sarahsSeries += $sarahsScore - $sarahsHand->getScore();
+                    $liemsSeries += $liemsScore;
+                    $sarahsSeries += $sarahsScore;
                     
                     
                     $metadataDao->putLog('GAME_END', 'liemsScore: ' . $liemsScore . ', sarahsScore: ' . $sarahsScore);
