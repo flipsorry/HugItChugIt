@@ -50,10 +50,7 @@ class TorrentHttpRequest {
     # echo exec("wget -q -O wget-test.html http://oldpiratebay.org/search/" . urlencode($search) . "/0/7/0");
     # echo exec("wget -q -O wget-test.html http://oldpiratebay.org/search.php?Torrent_sort=seeders.desc&q=" . urlencode($search));
     #echo exec("curl \"https://oldpiratebay.org/search.php?Torrent_sort=seeders.desc&q=" . urlencode($search) . "\" -H \"accept-encoding: gzip, deflate, sdch\" -H \"accept-language: en-US,en;q=0.8\" -H \"user-agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\" -H \"accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\" -H \"cache-control: max-age=0\" --compressed > wget-test.html");
-    echo exec("curl \"https://kat.cr/usearch/" . urlencode($search) . "/?field=seeders&sorder=desc\" -H \"accept-language: en-US,en;q=0.8\" -H \"user-agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.111 Safari/537.36\" -H \"Cookie: country_code=US\" -H \"accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\" -H \"cache-control: max-age=0\" --compressed > wget-test.html");
-    $file = fopen("wget-test.html", "r") or die("can't open file");
-    $webpage = fread($file, filesize("wget-test.html"));
-    fclose($file);
+    $webpage = shell_exec("curl \"https://kat.cr/usearch/" . urlencode($search) . "/?field=seeders&sorder=desc\" -H \"accept-language: en-US,en;q=0.8\" -H \"user-agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.111 Safari/537.36\" -H \"Cookie: country_code=US\" -H \"accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\" -H \"cache-control: max-age=0\" --compressed");
     $webpage = preg_replace("/\n/i", "", $webpage);
     $webpage = preg_replace("/(\/tr>)/i", "$1\n", $webpage);
 
