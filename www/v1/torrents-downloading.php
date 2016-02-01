@@ -72,6 +72,7 @@
     color: #666;
     padding-left: 20px;
     border-bottom: 3px solid #0072bc;
+    margin-bottom:5px;
   }
 
   div.torrentsContainer {
@@ -82,10 +83,12 @@
     background: #fff;
     border-top: 1px solid #e3e3e3;
     border-bottom: 2px solid #ccc;
-    margin-bottom: 10px;
+    margin: 0 8px 10px 8px;
     padding: 20px;
     clear: both;
     min-height: 100px;
+    -webkit-box-shadow: 5px 5px 5px #888;
+    border-radius: 5px;
   }
 
   div.image {
