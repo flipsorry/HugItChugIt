@@ -2,8 +2,8 @@
   // Converts ebooks to mobi if not already and then sends to my email
   // probably can put an end email
   $bookLocation = $_GET["bookLocation"];
-  $endLocation = $_GET["endLocation"];
-  $endLocation = "/home/flipsorry/Dos/Torrents/book" . rand(0, 10000) . ".mobi";
+  $endLocationName = $_GET["endLocation"];
+  $endLocation = "/home/flipsorry/Dos/Torrents/Books/$endLocationName-" . rand(0, 10000) . ".mobi";
   $type = $_GET["type"];
   echo $bookLocation;
   echo "<br /><br />";
@@ -11,7 +11,7 @@
     $convertOutput = array();
     // we need to translate to mobi first
     echo exec("pwd");
-    echo exec("ebook-convert \"$bookLocation\" \"$endLocation\"", $convertOutput);
+    echo exec("ebook-convert \"$bookLocation\" \"$endLocation\" --prefer-metadata-cover", $convertOutput);
     var_dump($convertOutput);
   } else {
     echo exec("cp \"$bookLocation\" \"$endLocation\"");

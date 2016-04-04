@@ -106,19 +106,6 @@
       <div id="torrentList">
       </div>
 
-     <!--
-      <table class='table table-striped'>
-      	<thead>
-      		<th>Name</th>
-      		<th>Speed</th>
-      		<th>Progress</th>
-      		<th>State</th>
-      	</thead>
-      	<tbody id="torrentList">
-      		
-      	</tbody>
-      </table>
-      -->
     </div>
     <!--<script type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js" ></script>
     -->
