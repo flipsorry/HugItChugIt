@@ -1,6 +1,33 @@
 <?php
 
 class ImageDao {
+
+    public function getImages($search) {
+        $imageCache = $this->getRequest($search);
+        if (! is_null($imageCache)) {
+          return array($imageCache);
+        }
+        $getImage = "phantomjs /home/flipsorry/www/v1/data/mysql/getImage.js '$search'";
+        $grepPng = 'egrep -o "data:image/jpeg;base64[^\"]+';
+        #echo exec("$getImage");
+        #echo exec("$getImage | $grepPng", $result);
+
+        $output = shell_exec("$getImage");
+        
+        $images = array();
+        foreach (explode("\n", $output) as $line) {
+          #echo "LINE $line";
+          preg_match('/data:image\/jpeg;base64[^\"]+/', $line, $matches);
+          if ($matches) {
+            #var_dump($matches);
+            array_push($images, $matches[0]);
+          }
+        }
+        # let's just cache the first result in our DB
+        $this->putRequest($search, $images[0]);
+        return $images;
+    }
+
     public function getRequest($name) {
         $con = $this->getConnection();
         $value = NULL;
