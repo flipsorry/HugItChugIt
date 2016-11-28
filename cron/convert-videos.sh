@@ -29,7 +29,7 @@ do
   echo "vCopy: $vCopy"
   mysql --user=root --password=liemdinh Torrents -e "UPDATE ConvertVideo Set Status = 'CONVERTING' WHERE Title ='$title'"
   avconv -y -i "$inputFile" -map 0:0 -map 0:$audioStreamIndex -vcodec $vCopy -acodec aac -strict experimental "$outputFile" 2> $logFile
-  mv "$inputFile" "/home/flipsorry/Dos/OldTorrents/$title"
+  mv "$inputFile" "/home/flipsorry/Tres/OldTorrents/$title"
   mysql --user=root --password=liemdinh Torrents -e "UPDATE ConvertVideo Set Status = 'DONE' WHERE Title ='$title'"
 
 done

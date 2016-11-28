@@ -102,7 +102,7 @@
     <div class="torrentsContainer">
       <div id="title"><h4>Downloading</h4></div>
       <div id="loader"><img style="-webkit-user-select: none" src="http://ecx.images-amazon.com/images/G/01/x-locale/common/loading/loading-1x"></div>
-     
+      <div id="play"><button id='playButton' class='btn btn-link download'>Play</button></div>
       <div id="torrentList">
       </div>
 
@@ -216,7 +216,29 @@
    }
    window.setChromecasts = function(chromecastList) {
      console.log(chromecastList);
+     return "hello world " + chromecastList;
    }
+
+   function searchChromecasts() {
+      setTimeout(function() {
+           webkit.messageHandlers.callbackHandler.postMessage("timeout call: " + Date.now());
+           searchChromecasts();
+      }, 5000)
+   }
+
+   //searchChromecasts();
+
+   var startVideo = function() {
+     webkit.messageHandlers.callbackHandler.postMessage("timeout call: " + Date.now());
+   }
+
+   $("#playButton").click(function() {
+     startVideo();
+   });
+
+   window.webkitLoaded = function() {
+     console.log("webkitLoaded");
+   };
 
 })();
     </script>
