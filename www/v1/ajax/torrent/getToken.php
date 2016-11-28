@@ -2,7 +2,7 @@
   include('./httpful.phar');
   require_once 'RestRequest.php';
   $rest = new RestRequest();
-  $getTokenUrl = 'http://localhost:1080/gui/token.html';
+  $getTokenUrl = 'http://192.168.1.160:1080/gui/token.html';
   
   $params = array();
   

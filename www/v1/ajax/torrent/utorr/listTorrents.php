@@ -4,7 +4,7 @@
   $rest = new RestRequest();
   $token = $_COOKIE["token"];
   #$cookies = $_GET["cookies"];
-  $getUrl = "http://localhost:1080/gui/?token=$token&list=1";
+  $getUrl = "http://192.168.1.160:1080/gui/?token=$token&list=1";
 
   $params = array();
 

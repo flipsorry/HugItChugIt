@@ -5,7 +5,7 @@
   $token = $_COOKIE["token"];
   $magnet = htmlspecialchars($_GET["magnet"]);
   #$cookies = $_GET["cookies"];
-  $getUrl = "http://localhost:1080/gui/?token=$token&action=add-url&s=$magnet";
+  $getUrl = "http://192.168.1.160:1080/gui/?token=$token&action=add-url&s=$magnet";
   echo $getUrl;
 
   $params = array();

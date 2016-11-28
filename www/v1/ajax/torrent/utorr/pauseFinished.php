@@ -4,8 +4,8 @@
   require_once 'RestRequest.php';
   $convertVideoDao = new ConvertVideoDao();
   $rest = new RestRequest();
-  $getTokenUrl = 'http://localhost:1080/gui/token.html';
-  $indexUrl = 'http://localhost:1080/gui/web/index.html';
+  $getTokenUrl = 'http://192.168.1.160:1080/gui/token.html';
+  $indexUrl = 'http://192.168.1.160:1080/gui/web/index.html';
   $params = array();
   $headers = getallheaders();
   # First get the token to utserve
@@ -18,7 +18,7 @@
   $token = $matches[1];
 
   # Now get all of the open torrents
-  $getUrl = "http://localhost:1080/gui/?token=$token&list=1"; 
+  $getUrl = "http://192.168.1.160:1080/gui/?token=$token&list=1"; 
   $results = $rest->makeAuthRequest('GET', "flipsorry", "hinesward", $getUrl, $params, $headers);
 
   $resultsJson = json_decode($results->getResponseBody(), true);
@@ -29,7 +29,7 @@
       # Find any "Seeding" torrents
       if ($torrent[4] == 1000
           && strcmp($torrent[21], 'Seeding') === 0 ) {
-        $getFilesUrl = "http://localhost:1080/gui/?token=$token&action=getfiles&cid=$cid&hash=" . $torrent[0];
+        $getFilesUrl = "http://192.168.1.160:1080/gui/?token=$token&action=getfiles&cid=$cid&hash=" . $torrent[0];
         echo "getFilesUrl: $getFilesUrl\n";
         $getFilesResults = $rest->makeAuthRequest('GET', "flipsorry", "hinesward", $getFilesUrl, $params, $headers);
         $filesJson = json_decode($getFilesResults->getResponseBody(), true);
@@ -74,7 +74,7 @@
           }
         }
         # Now stop the seeding
-        $pauseUrl = "http://localhost:1080/gui/?token=$token&action=stop&hash=" . $torrent[0];
+        $pauseUrl = "http://192.168.1.160:1080/gui/?token=$token&action=stop&hash=" . $torrent[0];
         echo "\nstopping torrent: " . $torrent[2] . ". Url: $pauseUrl\n\n";
         $results = $rest->makeAuthRequest('GET', "flipsorry", "hinesward", $pauseUrl, $params, $headers);
       }
