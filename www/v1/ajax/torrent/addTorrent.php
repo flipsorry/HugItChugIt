@@ -11,9 +11,13 @@
  
   $results = $rest->makeAuthRequest('GET', "flipsorry", "hinesward", $url, array(), getallheaders());
 
-  var_dump($results);
+  #var_dump($results);
 
-  $body = $results->getResponseBody(); 
-  echo ($body);
+  $body = $results->getResponseBody();
+  if (preg_match('/invalid request/', $results->getResponseBody())) {
+    header('HTTP/1.0 403 Forbidden');
+    die('Invalid token');
+  }
+  echo json_encode(array('response' => $body));
 
 ?>
